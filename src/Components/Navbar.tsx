@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useState } from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Divider from '@mui/material/Divider';
 
 const Navbar=()=> {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -32,13 +33,14 @@ const Navbar=()=> {
           <Grid container justifyContent="flex-end">
             <Button color='inherit' id='resource-menu' onClick={handleClick} aria-controls={open ? 'resource-menu' : undefined}
               aria-haspopup='true'
-              aria-aria-expanded={open ? 'true' : undefined}><AccountCircleIcon />
+              aria-expanded={open ? 'true' : undefined}><AccountCircleIcon />
             </Button>
           </Grid>
-          <Menu id='resource-menu' anchorEl={anchorEl} open={open} MenuListProps={{ 'aria-labelledby': 'resource-button', }} onClose={handleClose}>
+          <Menu id='resource-menu' anchorEl={anchorEl} open={open} MenuListProps={{ 'aria-labelledby': 'resource-button', }} onClose={handleClose} PaperProps={{sx: {width: '150px'}}}>
             <MenuItem onClick={handleClose}>My Profile</MenuItem>
             <MenuItem onClick={handleClose}>Wishlist</MenuItem>
             <MenuItem onClick={handleClose}>Cart</MenuItem>
+            <Divider sx={{ my: 0.5 }} />
             <MenuItem onClick={handleClose}>Login</MenuItem>
             <MenuItem onClick={handleClose}>Logout</MenuItem>
           </Menu>
