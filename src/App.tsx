@@ -1,25 +1,12 @@
-import React,{Fragment} from 'react';
-import Navbar from './Components/Navbar';
-import Welcome from './Components/Welcome';
-import {Routes, Route} from "react-router-dom"
-import { Container } from '@mui/material';
+import React, { Fragment } from 'react';
+import Home from './Components/Home';
 
-
-const App=()=> {
+const App = () => {
   return (
- 
- 
     <Fragment>
-    <Navbar/>
+      <Home/>
     </Fragment>
- 
-    // <Fragment>
-    //   <Routes>
-    //     <Route path='/' element={<Navbar/>} />
-    //     <Route path='/welcome' element={<Welcome/>} />
-    //   </Routes>
-    
-    // </Fragment>
+
   );
 }
 

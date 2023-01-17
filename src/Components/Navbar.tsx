@@ -5,20 +5,19 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { useState} from 'react'
-
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useState } from 'react'
+import axios from 'axios';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material'
+import { Dialog, DialogContent, DialogContentText, DialogActions } from '@mui/material'
 import Box from '@mui/material/Box';
 import { GoogleLogin } from 'react-google-login'
 import { GoogleLogout } from 'react-google-login'
 import { gapi } from 'gapi-script'
 
+const clientId = "895281300735-ce2q5upa6a4n8blu9mgtme5h9gah818t.apps.googleusercontent.com"
 
-const clientId="895281300735-ce2q5upa6a4n8blu9mgtme5h9gah818t.apps.googleusercontent.com"
 const Navbar = () => {
+
   const [name, setName] = useState()
   const [img, setImg] = useState()
   const [loggin, setLoggin] = useState(false)
@@ -30,32 +29,25 @@ const Navbar = () => {
     setAnchorEl(event.currentTarget)
 
   }
-  
+
   const handleClose = () => {
     setAnchorEl(null)
   }
   const handleProfile = () => {
     setAnchorEl(null)
   }
-useEffect(()=>{
-  function start(){
-    gapi.client.init({
-      clientId:clientId,
-      scope: ""
-      
-    })
-    setToken(gapi.auth.getToken().access_token)
-    console.log("token",token);
-    console.log("gapi",gapi);
-    // console.log("auth",auth.getToken());
-    // console.log("token",token);
-    // console.log("token",token);
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        clientId: clientId,
+        scope: ""
 
-  };
-  gapi.load('client:auth2',start);
-  
-}
-);
+      })
+    };
+    gapi.load('client:auth2', start);
+
+  }
+  );
 
 
   const commonStyles = {
@@ -67,81 +59,81 @@ useEffect(()=>{
     height: '2rem',
   };
 
-  const onSuccess=(res: any)=>{
-    
-    console.log("Login Sucess ! Current user :",res.profileObj);
-    console.log("id",res.profileObj.name);
-  
-    console.log("url",res.profileObj.imageUrl);
-    setName(res.profileObj.name)
-    setImg(res.profileObj.imageUrl)
-    console.log("img",img);
-  }
-  // useEffect(() => {
-  //   const test = 5;
-  //   // console.log(test); // return 5
-  //   setToken(gapi.auth.getToken().access_token)
-  //   setTimeout(() => {
-  //     console.log("token",token);
-  //   }, 2000);
-  // }, []);
+  const onSuccess = (res: any) => {
+    setToken(res.tokenId)
+    const data = {
+      userToken: res.tokenId
+    }
 
-  const onFailure=(res: any)=>{
-    console.log("Login Sucess ! Current user :",res);
-   
-    
+
+    axios.get(`http://localhost:8080/all/user`).then((response) => {
+      const userList = [...response.data]
+      var count = 0;
+      for (const key in userList) {
+        if ((userList[key].userEmail) === (res.profileObj.email)) {
+          setName(userList[key].userName);
+          setImg(userList[key].userPicture)
+          count = 1;
+          alert("User already exist")
+        }
+      }
+
+      if (count === 0) {
+        axios.post(`http://localhost:8080/all/user_token`, data)
+        alert("Welcome user")
+      }
+
+    })
   }
-  const onLogout=()=>{
+
+  const onFailure = (res: any) => {
+    console.log("Unable to Login");
+  }
+  const onLogout = () => {
+    setImg(undefined);
+    setName(undefined)
+    setToken(undefined)
     console.log("Logout Successfully");
+    setLoggout(false)
     sessionStorage.clear();
     localStorage.clear();
   }
 
-  
   return (
 
     <Fragment>
       <CssBaseline />
       <AppBar position='relative'>
         <Toolbar>
-   
           <AddShoppingCartIcon />
           <Typography variant='h6'>
-            Ecommerce   
+            Ecommerce
           </Typography>
-      
 
           <Grid container justifyContent="flex-end">
-          <Typography variant='h6'>
-          {name} 
-          </Typography>
-          
-            
+            <Typography variant='h6'>
+              {name}
+            </Typography>
             <Button color='inherit' id='resource-menu' onClick={handleClick} aria-controls={open ? 'resource-menu' : undefined}
               aria-haspopup='true'
               aria-expanded={open ? 'true' : undefined}>
-                     <Box component="img" sx={{ ...commonStyles, borderRadius: '50%' }}  src={img}/>
-                {/* <AccountCircleIcon /> */}
+              <Box component="img" sx={{ ...commonStyles, borderRadius: '50%' }} src={img} />
             </Button>
           </Grid>
           <Dialog
             open={loggin}
             onClose={() => setLoggin(false)}
             aria-labelledby='dialog-title'
-            aria-describedby='dialog-description'
-          //   PaperProps={{ sx: { width: "20%", height: "20%" } }
-          // }
-            >
-          
+          >
+
             <DialogContent>
-                {/* <Button autoFocus onClick={() => setLoggin(false)} href="/Welcome"> Login With Google</Button> */}
-                <GoogleLogin
+              <GoogleLogin
                 clientId={clientId}
                 buttonText="Login With Google"
                 onSuccess={onSuccess}
                 onFailure={onFailure}
                 cookiePolicy={'single_host_origin'}
-                isSignedIn={true}/>
+                isSignedIn={true} />
             </DialogContent>
           </Dialog>
 
@@ -150,23 +142,17 @@ useEffect(()=>{
             onClose={() => setLoggout(false)}
             aria-labelledby='dialog-title'
             aria-describedby='dialog-description'
-          //   PaperProps={{ sx: { width: "20%", height: "20%" } }
-          // }
-            >
-          
+          >
+
             <DialogContent>
               <DialogContentText>
                 Are you Sure to Logout?
               </DialogContentText>
-                {/* <Button autoFocus onClick={() => setLoggin(false)} href="/Welcome"> Login With Google</Button> */}
-                <GoogleLogout
-            clientId={clientId}
-            buttonText={"Logout"}
-            onLogoutSuccess={onLogout}
-            
-            
-            
-            ></GoogleLogout>
+              <GoogleLogout
+                clientId={clientId}
+                buttonText={"Logout"}
+                onLogoutSuccess={onLogout}
+              ></GoogleLogout>
             </DialogContent>
           </Dialog>
           <Menu id='resource-menu' anchorEl={anchorEl} open={open} MenuListProps={{ 'aria-labelledby': 'resource-button', }} onClose={handleClose} PaperProps={{ sx: { width: '150px' } }}>
@@ -174,10 +160,8 @@ useEffect(()=>{
             <MenuItem onClick={handleClose}>Wishlist</MenuItem>
             <MenuItem onClick={handleClose}>Cart</MenuItem>
             <Divider sx={{ my: 0.5 }} />
-            {token?  <MenuItem onClick={() => setLoggout(true)}>Logout</MenuItem>:
-            <MenuItem onClick={() => setLoggin(true)}>Login</MenuItem> }
-           
-           
+            {token ? <MenuItem onClick={() => setLoggout(true)}>Logout</MenuItem> :
+              <MenuItem onClick={() => setLoggin(true)}>Login</MenuItem>}
           </Menu>
         </Toolbar>
       </AppBar>
