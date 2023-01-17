@@ -22,6 +22,7 @@ const Navbar = () => {
   const [img, setImg] = useState()
   const [loggin, setLoggin] = useState(false)
   const [loggout, setLoggout] = useState(false)
+  
   const [token, setToken] = useState()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl)
@@ -45,7 +46,7 @@ const Navbar = () => {
       })
     };
     gapi.load('client:auth2', start);
-
+    console.log("ssss",gapi);
   }
   );
 
@@ -66,7 +67,7 @@ const Navbar = () => {
     }
 
 
-    axios.get(`http://localhost:8080/all/user`).then((response) => {
+    axios.get(`http://localhost:8080/user/all`).then((response) => {
       const userList = [...response.data]
       var count = 0;
       for (const key in userList) {
@@ -79,7 +80,7 @@ const Navbar = () => {
       }
 
       if (count === 0) {
-        axios.post(`http://localhost:8080/all/user_token`, data)
+        axios.post(`http://localhost:8080/user/user_token`, data)
         alert("Welcome user")
       }
 
@@ -152,7 +153,7 @@ const Navbar = () => {
                 clientId={clientId}
                 buttonText={"Logout"}
                 onLogoutSuccess={onLogout}
-              ></GoogleLogout>
+              />
             </DialogContent>
           </Dialog>
           <Menu id='resource-menu' anchorEl={anchorEl} open={open} MenuListProps={{ 'aria-labelledby': 'resource-button', }} onClose={handleClose} PaperProps={{ sx: { width: '150px' } }}>

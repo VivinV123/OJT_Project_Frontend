@@ -13,14 +13,12 @@ const Home=()=> {
   let newProductList: any = [];
   const [productList, setProductList] = useState([]);
   const [newproductList, setNewProductList]: any = useState([])
-  const [filterStatus, setFilterStatus] = React.useState(true)
-  const [sortStatus, setSortStatus] = React.useState(true);
   const [sort, setSort] = useState('');
   const [category, setCategory] = useState('');
 
   useEffect(() => {
 
-    axios.get(`http://localhost:8080/all/products`)
+    axios.get(`http://localhost:8080/product/all`)
       .then((res) => setProductList(res.data))
       .catch(err => console.log(err))
     console.log("errr");
@@ -39,13 +37,13 @@ const Home=()=> {
   const handleSort = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSort('asc');
     if (category == '') {
-      axios.get('http://localhost:8080/all/products/?sort=asc')
+      axios.get('http://localhost:8080/product/all/?sort=asc')
         .then(response => {
           setProductList(response.data);
         })
     }
     else {
-      axios.get('http://localhost:8080/all/products/?sort=asc&category='+category)
+      axios.get('http://localhost:8080/product/all/?sort=asc&category='+category)
         .then(response => {
           setProductList(response.data);
         })
@@ -54,13 +52,13 @@ const Home=()=> {
   const changeSort = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSort('desc');
     if (category == '') {
-      axios.get('http://localhost:8080/all/products/?sort=desc')
+      axios.get('http://localhost:8080/product/all/?sort=desc')
         .then(response => {
           setProductList(response.data);
         })
     }
     else {
-      axios.get('http://localhost:8080/all/products/?sort=desc&category='+category)
+      axios.get('http://localhost:8080/product/all/?sort=desc&category='+category)
         .then(response => {
           setProductList(response.data);
         })
@@ -69,13 +67,13 @@ const Home=()=> {
   const handleChange = (category: any) => {
     if (category != null) {
       setCategory(category)
-      axios.get(`http://localhost:8080/all/products/?category=`+category)
+      axios.get(`http://localhost:8080/product/all/?category=`+category)
         .then(response => {
           setProductList(response.data);
         })
     } else {
       setCategory('')
-      axios.get('http://localhost:8080/all/products')
+      axios.get('http://localhost:8080/product/all')
         .then(response => {
           setProductList(response.data);
         })
@@ -99,7 +97,7 @@ const Home=()=> {
           <Grid>
             <Typography variant='h6' sx={{ fontWeight: "bold" }}>
               Filter
-              {filterStatus && <Container>
+              <Container>
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
@@ -110,7 +108,7 @@ const Home=()=> {
                   sx={{ width: 200 }}
                   renderInput={(params) => <TextField {...params} label="Select Category" />}
                 />
-              </Container>}
+              </Container>
             </Typography>
           </Grid>
 
@@ -143,7 +141,7 @@ const Home=()=> {
           </Box>
           <Box>
           </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, width: 850 }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, width: 950 }}>
             <ImageList sx={{ width: 1600 }} cols={3} rowHeight={160}>
               {productList.map((product: any) => (
                 <Box p={3}>
